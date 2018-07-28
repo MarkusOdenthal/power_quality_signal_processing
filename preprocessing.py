@@ -172,21 +172,27 @@ class DataCleaning(object):
         hu_data = hu_data[hu_columns_order]
 
         # save data
-        print('Process parameter data ...')
+        print("#" * 80)
+        print('Process parameter data ...'.center(80, "#"))
+        print("#" * 80)
         self.save_parameter(parameter_data)
-        print('Process hi data ...')
+        print("#" * 80)
+        print('Process hi data ...'.center(80, "#"))
+        print("#" * 80)
         self.save_data(hi_data, self.hi_path)
-        print('Process hu data ...')
+        print("#" * 80)
+        print('Process hu data ...'.center(80, "#"))
+        print("#" * 80)
         self.save_data(hu_data, self.hu_path)
-        print('Process other data ...')
+        print("#" * 80)
+        print('Process other data ...'.center(80, "#"))
+        print("#" * 80)
         self.save_data(other_data, self.other_path)
 
 
 if __name__ == '__main__':
     working_path = "/Volumes/fo/"
-    for month in ("8", "7", "6", "5", "4", "3", "2"):
-        sources_path = "/Volumes/fo/PQI_raw/2017-0" + month + "*"
-        print((" Month: " + month + " ").center(80, "#"))
-        data_cleaning = DataCleaning(working_path, sources_path)
-        data_cleaning.run()
+    sources_path = "/Volumes/fo/PQI_raw/*"
+    data_cleaning = DataCleaning(working_path, sources_path)
+    data_cleaning.run()
     print("Done!")
