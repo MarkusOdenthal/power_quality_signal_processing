@@ -56,14 +56,13 @@ class DataCleaning(object):
                     ('THDI' in column) or ('THDU' in column) or ('freq' in column) or \
                     ('rms_i' in column) or ('rms_u' in column):
                 other_data_columns.append(column)
-            elif ('date' in column) or ('event_count' in column) or ('trigger_param' in column) or (
-                    'trigger_value' in column):
+            elif ('date' in column) or ('trigger_param' in column) or ('trigger_value' in column):
                 parameter_data_columns.append(column)
             elif ('ts' in column):
                 hi_data_columns.append(column)
                 hu_data_columns.append(column)
                 other_data_columns.append(column)
-            elif ('event_index' in column) or ('phase' in column):
+            elif ('event_index' in column) or ('phase' in column) or ('event_count' in column):
                 hi_data_columns.append(column)
                 hu_data_columns.append(column)
                 parameter_data_columns.append(column)
@@ -83,14 +82,16 @@ class DataCleaning(object):
         rename_dict = {}
         rename_column_order = []
         for column in columns:
-            if ("ts" not in column) and ("event_index" not in column) and ("phase" not in column):
+            if ("ts" not in column) and ("event_index" not in column) and ("phase" not in column) and (
+                    "event_count" not in column):
                 new_name = int(column[2:])
                 rename_dict[column] = new_name
                 rename_column_order.append(new_name)
         rename_column_order = sorted(rename_column_order)
         rename_column_order.insert(0, "phase")
         rename_column_order.insert(1, "event_index")
-        rename_column_order.insert(2, "ts")
+        rename_column_order.insert(2, "event_count")
+        rename_column_order.insert(3, "ts")
         return rename_dict, rename_column_order
 
     @staticmethod
@@ -103,7 +104,7 @@ class DataCleaning(object):
         data.columns = map(str, data.columns)
         new_partitions = data.npartitions // 20
         data = data.repartition(npartitions=new_partitions)
-        data.to_csv(path, index=None)
+        data.to_parquet(path, compression='GZIP')
 
     def save_parameter(self, parameter_data):
         """
@@ -112,7 +113,7 @@ class DataCleaning(object):
         """
         parameter_data = parameter_data.drop_duplicates()
         parameter_data = parameter_data.repartition(npartitions=1)
-        parameter_data.to_csv(self.parameter_path, index=None)
+        parameter_data.to_parquet(self.parameter_path, compression='GZIP')
 
     @staticmethod
     def data_cleaning(data_column):
@@ -192,7 +193,9 @@ class DataCleaning(object):
 
 if __name__ == '__main__':
     working_path = "/Volumes/fo/"
-    sources_path = "/Volumes/fo/PQI_raw/*"
+    sources_path = "/Volumes/fo/PQI/*"
+    print("start")
     data_cleaning = DataCleaning(working_path, sources_path)
     data_cleaning.run()
     print("Done!")
+
