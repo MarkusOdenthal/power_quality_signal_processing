@@ -1,5 +1,5 @@
 import dask.dataframe as dd
-from dask.distributed import Client
+from dask.distributed import Client, LocalCluster
 import my_utilities
 import os
 import webbrowser
@@ -133,10 +133,8 @@ class DataCleaning(object):
         """
         Main function of DataCleaning. With this function you can start the hole cleaning process
         """
-        script_dir = os.getcwd()
-        os.chdir(self.working_path)
-        client = Client()
-        os.chdir(script_dir)
+        cluster = LocalCluster(n_workers=7)
+        client = Client(cluster)
         webbrowser.open('http://127.0.0.1:8787/status')
         self.create_file_paths()
         print("#" * 80)
